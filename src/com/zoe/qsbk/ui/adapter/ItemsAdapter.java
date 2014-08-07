@@ -24,18 +24,19 @@ import com.zoe.qsbk.data.RequestManager;
 import com.zoe.qsbk.type.Item;
 
 // Cursor和ListView之间的Adapter
-public class ShotsAdapter extends CursorAdapter {
+public class ItemsAdapter extends CursorAdapter {
 	
 	private LayoutInflater mLayoutInflater;
 
 	private ListView mListView;
-
+	// 默认头像
 	private BitmapDrawable mDefaultAvatarBitmap = (BitmapDrawable) MyApp
 			.getContext().getResources().getDrawable(R.drawable.default_avatar);
+	// 默认图片
 	private Drawable mDefaultImageDrawable = new ColorDrawable(Color.argb(255,
 			201, 201, 201));
 
-	public ShotsAdapter(Context context, ListView listView) {
+	public ItemsAdapter(Context context, ListView listView) {
 		super(context, null, false);
 		mLayoutInflater = ((Activity) context).getLayoutInflater();
 		mListView = listView;

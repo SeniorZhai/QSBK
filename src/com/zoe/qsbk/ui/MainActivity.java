@@ -17,14 +17,14 @@ import android.view.Window;
 import com.zoe.qsbk.R;
 import com.zoe.qsbk.type.Category;
 import com.zoe.qsbk.ui.fragment.DrawerFragment;
-import com.zoe.qsbk.ui.fragment.ShotsFragment;
+import com.zoe.qsbk.ui.fragment.FeedFragment;
 
 public class MainActivity extends FragmentActivity {
 	private DrawerLayout mDrawerLayout;
 	private ActionBarDrawerToggle mDrawerToggle;
 	private Menu mMenu;
 	private Category mCategory;
-    private ShotsFragment mContentFragment;
+    private FeedFragment mContentFragment;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -105,7 +105,7 @@ public class MainActivity extends FragmentActivity {
             return;
         }
         mCategory = category;
-        mContentFragment = ShotsFragment.newInstance(category);
+        mContentFragment = FeedFragment.newInstance(category);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, mContentFragment).commit();
     }

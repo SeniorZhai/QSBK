@@ -61,6 +61,7 @@ public class ItemDataHelper extends BaseDataHelper {
 			ContentValues values = getContentValues(item);
 			contentValues.add(values);
 		}
+		Log.d("---", contentValues.size()+"");
 		ContentValues[] valueArray = new ContentValues[contentValues.size()];
 		// 数组->list内容相同的类型
 		bulkInsert(contentValues.toArray(valueArray));

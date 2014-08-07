@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.zoe.qsbk.R;
+import com.zoe.qsbk.type.Category;
 import com.zoe.qsbk.ui.MainActivity;
 import com.zoe.qsbk.ui.adapter.DrawerAdapter;
 
@@ -31,7 +32,7 @@ public class DrawerFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mListView.setItemChecked(position, true);
-//                mActivity.setCategory(Category.values()[position]);
+                mActivity.setCategory(Category.values()[position]);
             }
         });
         return contentView;

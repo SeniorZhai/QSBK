@@ -24,21 +24,25 @@ import com.zoe.qsbk.data.GsonRequest;
 import com.zoe.qsbk.type.Category;
 import com.zoe.qsbk.type.Feed;
 import com.zoe.qsbk.type.Item;
-import com.zoe.qsbk.ui.adapter.ShotsAdapter;
+import com.zoe.qsbk.ui.adapter.ItemsAdapter;
 import com.zoe.qsbk.util.CommonUtils;
 
-public class ShotsFragment extends BaseFragment implements
+public class FeedFragment extends BaseFragment implements
 		LoaderManager.LoaderCallbacks<Cursor> {
 	private static final String TAG = "ShotsFragment";
 	public static final String EXTRA_CATEGORY = "EXTRA_CATEGORY";
 	private Category mCategory;
 	private ListView mListView;
 	private ItemDataHelper mDataHelper;
-	private ShotsAdapter mAdapter;
+	private ItemsAdapter mAdapter;
+	private enum State{
+		load,stop;
+	}
+	private State mState = State.stop;
 	private int mPage = 1;
 
-	public static ShotsFragment newInstance(Category category) {
-		ShotsFragment fragment = new ShotsFragment();
+	public static FeedFragment newInstance(Category category) {
+		FeedFragment fragment = new FeedFragment();
 		Bundle bundle = new Bundle();
 		bundle.putString(EXTRA_CATEGORY, category.name());
 		fragment.setArguments(bundle);
@@ -53,27 +57,32 @@ public class ShotsFragment extends BaseFragment implements
 		Bundle bundle = getArguments();
 		mCategory = Category.valueOf(bundle.getString(EXTRA_CATEGORY));
 		mDataHelper = new ItemDataHelper(MyApp.getContext(), mCategory);
-		mAdapter = new ShotsAdapter(getActivity(), mListView);
+		mAdapter = new ItemsAdapter(getActivity(), mListView);
 		mListView.setAdapter(mAdapter);
 		// LoaderManager实例化一个loader，第一个参数为唯一标示，可选参数提供给Loader进行构造，第三个参数为LoaderCallbacks接口
 		getLoaderManager().initLoader(0, null, this);
-		//
-		mDataHelper.deleteAll();
 		mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
 			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
-
+				// 滚动状态
+				// SCROLL_STATE_TOUCH_SCROLL 正在滚动
+				// SCROLL_STATE_FLING 快速滚动
+				// SCROLL_STATE_IDLE 停止滚动
 			}
-
+			
 			@Override
 			public void onScroll(AbsListView view, int firstVisibleItem,
 					int visibleItemCount, int totalItemCount) {
+			// firstVisibleItem 当前能看到的第一个item的ID(从0开始)
+			// visibleItemCount 当前能看见的列表的个数(不完整的也算)
+			// totalItemCount 列表项总数
 				if (firstVisibleItem + visibleItemCount >= totalItemCount
 						&& totalItemCount != 0
 						&& totalItemCount != mListView.getHeaderViewsCount()
 								+ mListView.getFooterViewsCount()
-						&& mAdapter.getCount() > 0) {
+						&& mAdapter.getCount() > 0 && mState == State.stop) {
+					mState = State.load;
 					loadNextPage();
 				}
 			}
@@ -99,7 +108,7 @@ public class ShotsFragment extends BaseFragment implements
 										}
 										ArrayList<Item> shots = requestData
 												.getItems();
-									
+										Log.d("---","---");
 										mDataHelper.bulkInsert(shots);
 										return null;
 									}
@@ -107,6 +116,7 @@ public class ShotsFragment extends BaseFragment implements
 									@Override
 									protected void onPostExecute(Object o) {
 										super.onPostExecute(o);
+										mState = State.stop;
 									}
 								});
 					}
@@ -138,7 +148,7 @@ public class ShotsFragment extends BaseFragment implements
 		// 清空数据
 		mAdapter.changeCursor(null);
 	}
-
+	
 	private void loadNextPage() {
 		loadData(mPage + 1);
 	}
