@@ -79,6 +79,7 @@ public class ItemDataHelper extends BaseDataHelper {
 	}
 
 	public CursorLoader getCursorLoader() {
+		// 获取CursorLoader 根据category查询，按_id排序
 		return new CursorLoader(getContext(), getContentUri(), null,
 				ItemDBInfo.CATEGORY + "=?",
 				new String[] { String.valueOf(mCategory.ordinal()) },
@@ -89,7 +90,6 @@ public class ItemDataHelper extends BaseDataHelper {
 	public static final class ItemDBInfo implements BaseColumns {
 		private ItemDBInfo() {
 		}
-
 		public static final String TABLE_NAME = "item";
 		public static final String ID = "id";
 		public static final String CATEGORY = "category";

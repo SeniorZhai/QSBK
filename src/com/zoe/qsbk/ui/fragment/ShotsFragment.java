@@ -135,6 +135,7 @@ public class ShotsFragment extends BaseFragment implements
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
+		// 清空数据
 		mAdapter.changeCursor(null);
 	}
 
