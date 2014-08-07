@@ -1,20 +1,23 @@
 package com.zoe.qsbk.type;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class Feed {
+	// 当前页内容数
 	private int count;
+	// 总数
 	private int total;
+	// 当前页
     private int page;
-    private List<Item> items;
+    private ArrayList<Item> items;
     
 	public int getCount() {
 		return count;
 	}
-	public List<Item> getItems() {
+	public ArrayList<Item> getItems() {
 		return items;
 	}
-	public void setItems(List<Item> items) {
+	public void setItems(ArrayList<Item> items) {
 		this.items = items;
 	}
 	public void setCount(int count) {

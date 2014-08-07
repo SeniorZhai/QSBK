@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="app_name">MyApp</string>
+    <string name="app_name">糗事百科</string>
     <string name="action_settings">设置</string>
     <string name="action_refresh">刷新</string>
     <string name="action_share">分享</string>

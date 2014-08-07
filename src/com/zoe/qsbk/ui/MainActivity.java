@@ -39,7 +39,7 @@ public class MainActivity extends FragmentActivity {
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(false);
-		actionBar.setIcon(R.drawable.ic_actionbar);
+		actionBar.setIcon(R.drawable.ic_launcher);
 		// ActionBarDraWer切换监听器
 		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
 				R.drawable.ic_drawer, R.string.drawer_close,
