@@ -8,7 +8,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,7 @@ import com.zoe.qsbk.type.Item;
 
 // Cursor和ListView之间的Adapter
 public class ItemsAdapter extends CursorAdapter {
-	
+
 	private LayoutInflater mLayoutInflater;
 
 	private ListView mListView;
@@ -47,16 +46,18 @@ public class ItemsAdapter extends CursorAdapter {
 		mCursor.moveToPosition(position);
 		return Item.fromCursor(mCursor);
 	}
+
 	// 数据增加后调用
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
 		return mLayoutInflater.inflate(R.layout.listitem_item, null);
 	}
+
 	// 重绘时调用
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
 		Holder holder = getHolder(view);
-		
+
 		if (holder.imageRequest != null) {
 			holder.imageRequest.cancelRequest();
 		}
@@ -74,19 +75,18 @@ public class ItemsAdapter extends CursorAdapter {
 			holder.imageRequest = RequestManager.loadImage(Api.ImageURL(item
 					.getImage()), RequestManager.getImageListener(holder.image,
 					mDefaultImageDrawable, mDefaultImageDrawable));
-		}else{
+		} else {
 			holder.image.setVisibility(View.GONE);
 		}
 
-		if (item.getUser()!=null) {
+		if (item.getUser() != null) {
 			holder.avatar.setVisibility(View.VISIBLE);
 			holder.userName.setText(item.getUser().getLogin());
-			holder.avartarRequest = RequestManager.loadImage(Api.Avtnew(String.valueOf(item
-					.getUser()
-					.getId()), item.getUser().getIcon()), RequestManager
-					.getImageListener(holder.avatar, mDefaultAvatarBitmap,
-							mDefaultAvatarBitmap));
-		}else {
+			holder.avartarRequest = RequestManager.loadImage(Api.Avtnew(item
+					.getUser().getId(), item.getUser().getIcon()),
+					RequestManager.getImageListener(holder.avatar,
+							mDefaultAvatarBitmap, mDefaultAvatarBitmap));
+		} else {
 			holder.avatar.setVisibility(View.GONE);
 		}
 		holder.content.setText(item.getContent());
