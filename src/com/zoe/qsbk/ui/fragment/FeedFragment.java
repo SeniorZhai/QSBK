@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,11 +30,12 @@ import com.zoe.qsbk.ui.adapter.ItemsAdapter;
 import com.zoe.qsbk.util.CommonUtils;
 
 public class FeedFragment extends BaseFragment implements
-		LoaderManager.LoaderCallbacks<Cursor> {
+		LoaderManager.LoaderCallbacks<Cursor> ,OnRefreshListener{
 	private static final String TAG = "ShotsFragment";
 	public static final String EXTRA_CATEGORY = "EXTRA_CATEGORY";
 	private Category mCategory;
 	private ListView mListView;
+	 private SwipeRefreshLayout swipeLayout;
 	private ItemDataHelper mDataHelper;
 	private ItemsAdapter mAdapter;
 	private enum State{
@@ -53,6 +56,10 @@ public class FeedFragment extends BaseFragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View contentView = inflater.inflate(R.layout.fragment_shot, null);
+		swipeLayout = (SwipeRefreshLayout)contentView.findViewById(R.id.swipe_refresh);
+        swipeLayout.setOnRefreshListener(this);
+
+        swipeLayout.setColorScheme(android.R.color.holo_red_light,android.R.color.holo_green_light,android.R.color.holo_blue_bright,android.R.color.holo_orange_light);
 		mListView = (ListView) contentView.findViewById(R.id.listView);
 		Bundle bundle = getArguments();
 		mCategory = Category.valueOf(bundle.getString(EXTRA_CATEGORY));
@@ -116,7 +123,11 @@ public class FeedFragment extends BaseFragment implements
 									@Override
 									protected void onPostExecute(Object o) {
 										super.onPostExecute(o);
+										if (mPage == 1) {
+											mListView.setSelection(0);
+										}
 										mState = State.stop;
+										swipeLayout.setRefreshing(false);
 									}
 								});
 					}
@@ -124,7 +135,7 @@ public class FeedFragment extends BaseFragment implements
 				}, new Response.ErrorListener() {
 					@Override
 					public void onErrorResponse(VolleyError arg0) {
-
+						swipeLayout.setRefreshing(false);
 					}
 				}));
 	}
@@ -151,5 +162,14 @@ public class FeedFragment extends BaseFragment implements
 	
 	private void loadNextPage() {
 		loadData(mPage + 1);
+	}
+
+	@Override
+	public void onRefresh() {
+		if(!swipeLayout.isRefreshing()){
+			swipeLayout.setRefreshing(true);
+		}
+		loadData(1);
+		
 	}
 }

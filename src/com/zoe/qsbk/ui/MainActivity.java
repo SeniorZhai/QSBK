@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
+import com.umeng.update.UmengUpdateAgent;
 import com.zoe.qsbk.R;
 import com.zoe.qsbk.type.Category;
 import com.zoe.qsbk.ui.fragment.DrawerFragment;
@@ -24,10 +25,13 @@ public class MainActivity extends FragmentActivity {
 	private ActionBarDrawerToggle mDrawerToggle;
 	private Menu mMenu;
 	private Category mCategory;
-    private FeedFragment mContentFragment;
+	private FeedFragment mContentFragment;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		UmengUpdateAgent.setUpdateOnlyWifi(false);
+		UmengUpdateAgent.update(this);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_main);
 		findViews();
@@ -91,6 +95,7 @@ public class MainActivity extends FragmentActivity {
 		}
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
+			mContentFragment.onRefresh();
 			return true;
 		case R.id.action_settings:
 			return true;
@@ -99,14 +104,16 @@ public class MainActivity extends FragmentActivity {
 		}
 
 	}
+
 	public void setCategory(Category category) {
-        mDrawerLayout.closeDrawer(GravityCompat.START);
-        if (mCategory == category) {
-            return;
-        }
-        mCategory = category;
-        mContentFragment = FeedFragment.newInstance(category);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, mContentFragment).commit();
-    }
+		mDrawerLayout.closeDrawer(GravityCompat.START);
+		if (mCategory == category) {
+			return;
+		}
+		mCategory = category;
+		mContentFragment = FeedFragment.newInstance(category);
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		fragmentManager.beginTransaction()
+				.replace(R.id.content_frame, mContentFragment).commit();
+	}
 }
