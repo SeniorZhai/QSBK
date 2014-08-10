@@ -9,7 +9,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +54,7 @@ public class FeedFragment extends BaseFragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View contentView = inflater.inflate(R.layout.fragment_shot, null);
+		View contentView = inflater.inflate(R.layout.fragment_feed, null);
 		swipeLayout = (SwipeRefreshLayout)contentView.findViewById(R.id.swipe_refresh);
         swipeLayout.setOnRefreshListener(this);
 
@@ -115,7 +114,6 @@ public class FeedFragment extends BaseFragment implements
 										}
 										ArrayList<Item> shots = requestData
 												.getItems();
-										Log.d("---","---");
 										mDataHelper.bulkInsert(shots);
 										return null;
 									}

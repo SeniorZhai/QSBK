@@ -10,7 +10,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.v4.content.CursorLoader;
-import android.util.Log;
 
 import com.zoe.qsbk.database.Column;
 import com.zoe.qsbk.database.SQLiteTable;
@@ -61,7 +60,6 @@ public class ItemDataHelper extends BaseDataHelper {
 			ContentValues values = getContentValues(item);
 			contentValues.add(values);
 		}
-		Log.d("---", contentValues.size()+"");
 		ContentValues[] valueArray = new ContentValues[contentValues.size()];
 		// 数组->list内容相同的类型
 		bulkInsert(contentValues.toArray(valueArray));
