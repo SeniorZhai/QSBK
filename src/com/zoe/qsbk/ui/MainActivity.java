@@ -13,6 +13,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import com.umeng.update.UmengUpdateAgent;
 import com.zoe.qsbk.R;
@@ -95,6 +98,7 @@ public class MainActivity extends FragmentActivity {
 		}
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
+			showRefreshAnimation(item);
 			mContentFragment.onRefresh();
 			return true;
 		case R.id.action_settings:
@@ -115,5 +119,35 @@ public class MainActivity extends FragmentActivity {
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		fragmentManager.beginTransaction()
 				.replace(R.id.content_frame, mContentFragment).commit();
+	}
+
+	protected MenuItem refreshItem;
+	private void showRefreshAnimation(MenuItem item) {
+		hideRefreshAnimation();
+
+		refreshItem = item;
+
+		// 这里使用一个ImageView设置成MenuItem的ActionView，这样我们就可以使用这个ImageView显示旋转动画了
+		ImageView refreshActionView = (ImageView) getLayoutInflater().inflate(
+				R.layout.action_view, null);
+		refreshActionView.setImageResource(R.drawable.ic_refresh);
+		refreshItem.setActionView(refreshActionView);
+
+		// 显示刷新动画
+		Animation animation = AnimationUtils
+				.loadAnimation(this, R.anim.refresh);
+		animation.setRepeatMode(Animation.RESTART);
+		animation.setRepeatCount(Animation.INFINITE);
+		refreshActionView.startAnimation(animation);
+	}
+
+	public void hideRefreshAnimation() {
+		if (refreshItem != null) {
+			View view = refreshItem.getActionView();
+			if (view != null) {
+				view.clearAnimation();
+				refreshItem.setActionView(null);
+			}
+		}
 	}
 }

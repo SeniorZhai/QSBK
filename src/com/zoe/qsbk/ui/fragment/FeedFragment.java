@@ -25,6 +25,7 @@ import com.zoe.qsbk.data.GsonRequest;
 import com.zoe.qsbk.type.Category;
 import com.zoe.qsbk.type.Feed;
 import com.zoe.qsbk.type.Item;
+import com.zoe.qsbk.ui.MainActivity;
 import com.zoe.qsbk.ui.adapter.ItemsAdapter;
 import com.zoe.qsbk.util.CommonUtils;
 
@@ -32,6 +33,7 @@ public class FeedFragment extends BaseFragment implements
 		LoaderManager.LoaderCallbacks<Cursor> ,OnRefreshListener{
 	private static final String TAG = "ShotsFragment";
 	public static final String EXTRA_CATEGORY = "EXTRA_CATEGORY";
+	private MainActivity mActivity;
 	private Category mCategory;
 	private ListView mListView;
 	 private SwipeRefreshLayout swipeLayout;
@@ -54,6 +56,7 @@ public class FeedFragment extends BaseFragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		mActivity = (MainActivity) getActivity();
 		View contentView = inflater.inflate(R.layout.fragment_feed, null);
 		swipeLayout = (SwipeRefreshLayout)contentView.findViewById(R.id.swipe_refresh);
         swipeLayout.setOnRefreshListener(this);
@@ -125,6 +128,7 @@ public class FeedFragment extends BaseFragment implements
 											mListView.setSelection(0);
 										}
 										mState = State.stop;
+										mActivity.hideRefreshAnimation();
 										swipeLayout.setRefreshing(false);
 									}
 								});
@@ -134,6 +138,7 @@ public class FeedFragment extends BaseFragment implements
 					@Override
 					public void onErrorResponse(VolleyError arg0) {
 						swipeLayout.setRefreshing(false);
+						mActivity.hideRefreshAnimation();
 					}
 				}));
 	}
