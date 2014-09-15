@@ -28,21 +28,22 @@ import com.zoe.qsbk.type.Item;
 import com.zoe.qsbk.ui.MainActivity;
 import com.zoe.qsbk.ui.adapter.ItemsAdapter;
 import com.zoe.qsbk.util.CommonUtils;
+import com.zoe.qsbk.view.PulltoRefreshListView;
+import com.zoe.qsbk.view.PulltoRefreshListView.OnLoadNextListener;
+import com.zoe.qsbk.view.PulltoRefreshListView.State;
 
 public class FeedFragment extends BaseFragment implements
-		LoaderManager.LoaderCallbacks<Cursor> ,OnRefreshListener{
+		LoaderManager.LoaderCallbacks<Cursor>, OnRefreshListener,
+		OnLoadNextListener {
 	private static final String TAG = "ShotsFragment";
 	public static final String EXTRA_CATEGORY = "EXTRA_CATEGORY";
 	private MainActivity mActivity;
 	private Category mCategory;
-	private ListView mListView;
-	 private SwipeRefreshLayout swipeLayout;
+	private PulltoRefreshListView mListView;
+	private SwipeRefreshLayout swipeLayout;
 	private ItemDataHelper mDataHelper;
 	private ItemsAdapter mAdapter;
-	private enum State{
-		load,stop;
-	}
-	private State mState = State.stop;
+
 	private int mPage = 1;
 
 	public static FeedFragment newInstance(Category category) {
@@ -58,11 +59,16 @@ public class FeedFragment extends BaseFragment implements
 			Bundle savedInstanceState) {
 		mActivity = (MainActivity) getActivity();
 		View contentView = inflater.inflate(R.layout.fragment_feed, null);
-		swipeLayout = (SwipeRefreshLayout)contentView.findViewById(R.id.swipe_refresh);
-        swipeLayout.setOnRefreshListener(this);
+		swipeLayout = (SwipeRefreshLayout) contentView
+				.findViewById(R.id.swipe_refresh);
+		swipeLayout.setOnRefreshListener(this);
 
-        swipeLayout.setColorScheme(android.R.color.holo_red_light,android.R.color.holo_green_light,android.R.color.holo_blue_bright,android.R.color.holo_orange_light);
-		mListView = (ListView) contentView.findViewById(R.id.listView);
+		swipeLayout.setColorScheme(android.R.color.holo_red_light,
+				android.R.color.holo_green_light,
+				android.R.color.holo_blue_bright,
+				android.R.color.holo_orange_light);
+		mListView = (PulltoRefreshListView) contentView
+				.findViewById(R.id.listView);
 		Bundle bundle = getArguments();
 		mCategory = Category.valueOf(bundle.getString(EXTRA_CATEGORY));
 		mDataHelper = new ItemDataHelper(MyApp.getContext(), mCategory);
@@ -70,33 +76,7 @@ public class FeedFragment extends BaseFragment implements
 		mListView.setAdapter(mAdapter);
 		// LoaderManager实例化一个loader，第一个参数为唯一标示，可选参数提供给Loader进行构造，第三个参数为LoaderCallbacks接口
 		getLoaderManager().initLoader(0, null, this);
-		mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-
-			@Override
-			public void onScrollStateChanged(AbsListView view, int scrollState) {
-				// 滚动状态
-				// SCROLL_STATE_TOUCH_SCROLL 正在滚动
-				// SCROLL_STATE_FLING 快速滚动
-				// SCROLL_STATE_IDLE 停止滚动
-			}
-			
-			@Override
-			public void onScroll(AbsListView view, int firstVisibleItem,
-					int visibleItemCount, int totalItemCount) {
-			// firstVisibleItem 当前能看到的第一个item的ID(从0开始)
-			// visibleItemCount 当前能看见的列表的个数(不完整的也算)
-			// totalItemCount 列表项总数
-				if (firstVisibleItem + visibleItemCount >= totalItemCount
-						&& totalItemCount != 0
-						&& totalItemCount != mListView.getHeaderViewsCount()
-								+ mListView.getFooterViewsCount()
-						&& mAdapter.getCount() > 0 && mState == State.stop) {
-					mState = State.load;
-					loadNextPage();
-				}
-			}
-		});
-
+		mListView.setLoadNextListener(this);
 		return contentView;
 	}
 
@@ -127,9 +107,9 @@ public class FeedFragment extends BaseFragment implements
 										if (mPage == 1) {
 											mListView.setSelection(0);
 										}
-										mState = State.stop;
 										mActivity.hideRefreshAnimation();
 										swipeLayout.setRefreshing(false);
+										mListView.setState(State.stop);
 									}
 								});
 					}
@@ -139,6 +119,7 @@ public class FeedFragment extends BaseFragment implements
 					public void onErrorResponse(VolleyError arg0) {
 						swipeLayout.setRefreshing(false);
 						mActivity.hideRefreshAnimation();
+						mListView.setState(State.stop);
 					}
 				}));
 	}
@@ -150,7 +131,7 @@ public class FeedFragment extends BaseFragment implements
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		
+
 		if (data != null && data.getCount() == 0) {
 			loadData(1);
 		}
@@ -162,17 +143,22 @@ public class FeedFragment extends BaseFragment implements
 		// 清空数据
 		mAdapter.changeCursor(null);
 	}
-	
+
 	private void loadNextPage() {
 		loadData(mPage + 1);
 	}
 
 	@Override
 	public void onRefresh() {
-		if(!swipeLayout.isRefreshing()){
+		if (!swipeLayout.isRefreshing()) {
 			swipeLayout.setRefreshing(true);
 		}
 		loadData(1);
-		
 	}
+
+	@Override
+	public void onLoadNext() {
+		loadNextPage();
+	}
+
 }
